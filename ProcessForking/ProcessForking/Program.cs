@@ -1,14 +1,17 @@
-﻿using System;
+﻿#region |Name Space|
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+#endregion
 
 namespace ProcessForking
 {
     /// <summary>
-    /// 
+    /// Class Process Start
     /// </summary>
     internal class ProcessStart
     {
+        #region |Private Variables Declartion|
         private readonly List<int> lstActiveProcessId = new List<int>();
         private readonly List<int> lstInActiveProcessId = new List<int>();
         private int counterActive;
@@ -18,22 +21,20 @@ namespace ProcessForking
         private Process notePad;
         private int totalprocess = 1000;
         private int totalActiveProcess = 100;
-
+        #endregion
 
         /// <summary>
-        /// 
+        /// Main Method 
         /// </summary>
-        /// <param name="args"></param>
+        /// <param name="args">string Command Line Argument</param>
         private static void Main(string[] args)
         {
-            
             var processStart = new ProcessStart();
-
             processStart.fork();
         }
 
         /// <summary>
-        /// 
+        /// Private Method Fork for Forking the Process.
         /// </summary>
         private void fork()
         {
@@ -46,12 +47,19 @@ namespace ProcessForking
                     notePad.StartInfo = processStartInfo;
                     notePad.Start();
 
-                    // Add Process Id to Active process id List
+                    //***************************
+                    //Add Process Id to Active process id List
+                    //***************************
                     lstActiveProcessId.Add(notePad.Id);
-
+                    
+                    //***************************
+                    //Checking for printing the Active Process List
+                    //***************************
                     if (counterActive == 2)
                     {
+                        //************************
                         //Print the Active Process Id
+                        //************************
                         foreach (int procId in lstActiveProcessId)
                         {
                             Console.WriteLine("Active Process Id =" + procId);
@@ -61,6 +69,9 @@ namespace ProcessForking
                 }
                 else
                 {
+                    //*********************************
+                    //Inactive Process Creations
+                    //*********************************
                     var processStartInfo = new ProcessStartInfo("notepad.exe", "spawn");
                     processStartInfo.CreateNoWindow = true;
                     processStartInfo.UseShellExecute = false;
@@ -68,15 +79,16 @@ namespace ProcessForking
                     processStartInfo.RedirectStandardOutput = false;
                     notePad = Process.GetCurrentProcess();
                     notePad.StartInfo = processStartInfo;
-                    notePad.Start();
-                    //Console.WriteLine("Ideal ProcessId =" + notePad.Id);
+                    notePad.Start();                    
                     lstInActiveProcessId.Add(notePad.Id);
                     notePad.WaitForExit();
                 }
 
                 counterCreate++;
                 notePad.EnableRaisingEvents = true;
+                //***********************************
                 // Add eevent handler on Process exit
+                //***********************************
                 notePad.Exited += OnProcessExisted;
             }
 
@@ -91,15 +103,15 @@ namespace ProcessForking
         }
 
         /// <summary>
-        /// 
+        /// On ProcessExit Method
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Object sender</param>
+        /// <param name="e">Eventargs e</param>
         private void OnProcessExisted(object sender, EventArgs e)
         {
             if (sender != null)
             {
-                var activeprocess = (Process) sender;
+                var activeprocess = (Process)sender;
                 if (lstActiveProcessId.Contains(activeprocess.Id))
                 {
                     //Print a Exit message for this process
